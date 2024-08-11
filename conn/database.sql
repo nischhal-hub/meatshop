@@ -1,0 +1,51 @@
+CREATE DATABASE IF NOT EXISTS meatshop;
+USE meatshop;
+
+CREATE TABLE Users (
+    UserID INT AUTO_INCREMENT PRIMARY KEY,
+    Username VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(255) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO `Users` (`UserID`, `Username`, `Email`, `PasswordHash`, `CreatedAt`) VALUES
+(1, 'user', 'user@gmail.com', '$2y$10$P25CFg34YbhqNKqqZlP3feVMHSNN//KvFv5vtg9tX..9VPWbvS4BS', '2024-08-11 11:51:38'),
+(3, 'admin', 'admin@gmail.com', '$2y$10$OZmEZHv4vGQZn5ISL0jvlOqV0f5soJcdG6DLg2UVo3wNitzIgUxoO', '2024-08-11 12:18:00');
+
+CREATE TABLE Products (
+    ProductID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Description TEXT,
+    Price DECIMAL(10, 2) NOT NULL,
+    Stock INT NOT NULL,
+    Type ENUM('Chicken', 'Beef', 'Pork', 'Fish','Goat') NOT NULL,
+    ImageUrl TEXT,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE CartItems (
+    CartItemID INT AUTO_INCREMENT PRIMARY KEY,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
+
+CREATE TABLE Orders (
+    OrderID INT AUTO_INCREMENT PRIMARY KEY,
+    UserID INT NOT NULL,
+    TotalAmount DECIMAL(10, 2) NOT NULL,
+    OrderStatus VARCHAR(50) DEFAULT 'Pending',
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (UserID) REFERENCES Users(UserID) ON DELETE CASCADE
+);
+
+CREATE TABLE OrderItems (
+    OrderItemID INT AUTO_INCREMENT PRIMARY KEY,
+    OrderID INT NOT NULL,
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID) ON DELETE CASCADE,
+    FOREIGN KEY (ProductID) REFERENCES Products(ProductID) ON DELETE CASCADE
+);
